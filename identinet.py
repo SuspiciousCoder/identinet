@@ -58,15 +58,17 @@ while True:
         user = input("Username: ")
 
         c = db.connection.cursor()
-        c.execute(f"INSERT INTO identinet(url,email,user) VALUES ('{url}', '{email}'', '{user}')")
+        c.execute(f"INSERT INTO identinet(url,email,username) VALUES (?, ?, ?)", (url, email, user))
         db.connection.commit()
         c.close()
 
     elif inp == 'l':
         c = db.connection.cursor()
-        ret = c.execute("SELECT * FROM identinet")
+        ret = c.execute("SELECT url, email, username FROM identinet")
+
+        print("(URL, Email, User)")
         for r in ret:
-            print(ret)
+            print(r)
         c.close()
 
     elif inp == 'x':
