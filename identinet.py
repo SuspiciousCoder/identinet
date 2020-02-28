@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import sqlite3
-
 from sqlite3 import Error
+
+#
+# Database Handler
+#
 
 class Database:
     def __init__(self, path):
@@ -38,46 +41,73 @@ class Database:
             print(f"[ERROR] {e}")
         c.close()
 
+    def execute(self, query):
+        ret = []
+        c = self.connection.cursor()
+        try:
+            res = c.execute(query)
+        except Error as e:
+            print(f"[ERROR] {e}")
+        else:
+            for r in res:
+                ret.append(r)
+
+        c.close()
+        return ret
 
 
+    def insert(self, query, values):
+        c = self.connection.cursor()
+        try:
+            c.execute(query, values)
+            self.connection.commit()
+        except Error as e:
+            print(f"[ERROR] {e}")
+
+        c.close()
+
+
+
+#
+# MAIN
+#
 
 db = Database('identinet.db')
 print("Checking database")
 if db.check() == False:
     print("Identinet table not found. Initializing")
-db.create_table()
+    db.create_table()
 
 print("(? for help)")
 while True:
     inp = input("> ")
     if inp == '?':
-        print("Help me")
+        print("identinet version 1")
+        print("a - add Entry")
+        print("l - list all Entries")
+        print("= - Select Entries")
+        print("x - exit")
+
     elif inp == "a":
         url = input("URL: ")
         email = input("Email: ")
         user = input("Username: ")
 
-        c = db.connection.cursor()
-        c.execute(f"INSERT INTO identinet(url,email,username) VALUES (?, ?, ?)", (url, email, user))
-        db.connection.commit()
-        c.close()
+        db.insert("INSERT INTO identinet(url,email,username) VALUES (?, ?, ?)", (url, email, user))
 
     elif inp == 'l':
-        c = db.connection.cursor()
-        ret = c.execute("SELECT url, email, username FROM identinet")
+        ret = db.execute("SELECT url, email, username FROM identinet")
 
         print("(URL, Email, User)")
         for r in ret:
             print(r)
-        c.close()
 
 
     elif inp == '=':
         col = input("Column: ")
         val = input("Value: ")
 
-        c = db.connection.cursor()
-        ret = c.execute(f"SELECT url, email, username FROM identinet WHERE {col} = '{val}'")
+        ret = db.execute(f"SELECT url, email, username FROM identinet WHERE {col} = '{val}'")
 
         print("(URL, Email, User)")
         for r in ret:
@@ -86,17 +116,3 @@ while True:
 
     elif inp == 'x':
         break
-
-
-
-print("Printing config")
-c = db.connection.cursor()
-res = None
-try:
-    res = c.execute("SELECT * FROM identinet")
-except Error as e:
-        print(f"[ERROR] {e}")
-else:
-
-    for r in res:
-        print(r)
