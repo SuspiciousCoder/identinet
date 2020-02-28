@@ -14,6 +14,8 @@ class Database:
         except Error as e:
             print(f"[ERROR] {e}")
 
+            "MUAHAHAHAHAHHAHAHAHAHAHAHAHAH IM HERE!"
+
     def check(self):
         c = self.connection.cursor()
         res = None
