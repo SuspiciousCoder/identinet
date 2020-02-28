@@ -14,8 +14,6 @@ class Database:
         except Error as e:
             print(f"[ERROR] {e}")
 
-            "MUAHAHAHAHAHHAHAHAHAHAHAHAHAH IM HERE!"
-
     def check(self):
         c = self.connection.cursor()
         res = None
@@ -51,7 +49,7 @@ db.create_table()
 
 print("(? for help)")
 while True:
-    inp = input(">")
+    inp = input("> ")
     if inp == '?':
         print("Help me")
     elif inp == "a":
@@ -67,6 +65,19 @@ while True:
     elif inp == 'l':
         c = db.connection.cursor()
         ret = c.execute("SELECT url, email, username FROM identinet")
+
+        print("(URL, Email, User)")
+        for r in ret:
+            print(r)
+        c.close()
+
+
+    elif inp == '=':
+        col = input("Column: ")
+        val = input("Value: ")
+
+        c = db.connection.cursor()
+        ret = c.execute(f"SELECT url, email, username FROM identinet WHERE {col} = '{val}'")
 
         print("(URL, Email, User)")
         for r in ret:
